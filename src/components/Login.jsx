@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../supabase'
+import ThemeToggle from './ThemeToggle'
 
 export default function Login() {
   const [mode, setMode] = useState('signin')
@@ -22,6 +23,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
+      <ThemeToggle className="fixed right-4 top-4" />
       <form onSubmit={submit} className="w-full max-w-sm rounded-lg border border-line bg-surface p-6">
         <h1 className="text-2xl font-bold">Machine log</h1>
         <p className="mt-1 text-muted">Settings that worked, settings that didn’t, and a check before you test.</p>

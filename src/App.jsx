@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from './supabase'
-import { TYPE_LABELS } from './constants'
 import Login from './components/Login'
 import NewRun from './components/NewRun'
 import History from './components/History'
 import Machines from './components/Machines'
-import Assistant from './components/Assistant'
+import ThemeToggle from './components/ThemeToggle'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -38,14 +37,14 @@ function Workspace({ user }) {
   const [tab, setTab] = useState('log')
   const [prefill, setPrefill] = useState(null)
   const [error, setError] = useState('')
-  const [askOpen, setAskOpen] = useState(false)
-  const [draft, setDraft] = useState(null)
+  const [loaded, setLoaded] = useState(false)
 
   const load = useCallback(async () => {
     const [m, d] = await Promise.all([
       supabase.from('machines').select('*').order('created_at'),
-      supabase.from('parameter_defs').select('*').order('sort'),
+      supabase.from('parameter_defs').select('*').order('sort').order('label'),
     ])
+    setLoaded(true)
     if (m.error || d.error) {
       setError((m.error || d.error).message)
       return
@@ -59,32 +58,33 @@ function Workspace({ user }) {
   useEffect(() => { load() }, [load])
 
   const machine = machines.find((m) => m.id === machineId)
-  const machineDefs = machine ? defs.filter((d) => d.machine_type === machine.machine_type) : []
+  const machineDefs = machine ? defs.filter((d) => d.machine_id === machine.id) : []
+  const activePrefill = prefill && machine && prefill.machineId === machine.id ? prefill : null
 
   function startFrom(run) {
-    setPrefill({ material: run.material, params: run.params, key: Date.now() })
+    setPrefill({ machineId: run.machine_id, material: run.material, params: run.params, key: Date.now() })
     setTab('log')
   }
 
+  function openMachineSettings(id) {
+    setMachineId(id)
+    setTab('machines')
+  }
+
   return (
-    <>
-    <div className={`mx-auto max-w-6xl px-4 pb-16 sm:px-6 ${askOpen ? 'xl:mr-[28rem]' : ''}`}>
+    <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-4">
         <h1 className="text-xl font-bold">Machine log</h1>
-        <div className="flex items-center gap-3 text-sm text-muted">
-          <button className="btn-primary py-1 text-sm" onClick={() => setAskOpen((o) => !o)} aria-expanded={askOpen}>
-            {askOpen ? 'Close' : 'Ask Claude or ChatGPT'}
-          </button>
-          <span className="hidden sm:inline">{user.email}</span>
-          <button className="btn-quiet py-1 text-sm" onClick={() => supabase.auth.signOut()}>
-            Sign out
-          </button>
+        <div className="flex items-center gap-2 text-sm text-muted">
+          <span className="mr-1 hidden md:inline">{user.email}</span>
+          <ThemeToggle />
+          <button className="btn-quiet btn-sm" onClick={() => supabase.auth.signOut()}>Sign out</button>
         </div>
       </header>
 
       {error && (
         <p className="mt-4 rounded-md border border-bad p-3 text-bad">
-          Couldn’t load machines: {error}. Check that schema.sql has been run in Supabase.
+          Couldn’t load machines: {error}. If you’ve just updated the site, check that update-002.sql has been run in Supabase.
         </p>
       )}
 
@@ -101,10 +101,8 @@ function Workspace({ user }) {
                 className={`btn border ${on ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink'}`}
               >
                 {m.name}
-                {m.name !== TYPE_LABELS[m.machine_type] && (
-                  <span className={`ml-2 text-xs font-normal ${on ? 'opacity-70' : 'text-muted'}`}>
-                    {TYPE_LABELS[m.machine_type]}
-                  </span>
+                {m.machine_type && m.machine_type !== m.name && (
+                  <span className={`text-xs font-normal ${on ? 'opacity-70' : 'text-muted'}`}>{m.machine_type}</span>
                 )}
               </button>
             )
@@ -112,13 +110,13 @@ function Workspace({ user }) {
         </div>
       )}
 
-      <nav className="mt-6 flex gap-6 border-b border-line" aria-label="Sections">
+      <nav className="mt-6 flex gap-6 overflow-x-auto border-b border-line" aria-label="Sections">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
             aria-current={tab === t.id ? 'page' : undefined}
-            className={`-mb-px border-b-2 pb-2 font-bold ${
+            className={`-mb-px whitespace-nowrap border-b-2 pb-2 font-bold ${
               tab === t.id ? 'border-accent text-ink' : 'border-transparent text-muted hover:text-ink'
             }`}
           >
@@ -128,17 +126,20 @@ function Workspace({ user }) {
       </nav>
 
       <main className="mt-6">
-        {tab === 'machines' && <Machines machines={machines} defs={defs} onChanged={load} />}
-        {tab !== 'machines' && !machine && !error && (
-          <p className="text-muted">Add a machine in “Machines and settings” to get started.</p>
+        {tab === 'machines' && (
+          <Machines machines={machines} defs={defs} selectedId={machineId} onSelect={setMachineId} onChanged={load} />
+        )}
+        {tab !== 'machines' && loaded && !machine && !error && (
+          <p className="text-muted">No machines yet. Add one in “Machines and settings” to get started.</p>
         )}
         {tab === 'log' && machine && (
           <NewRun
-            key={`${machine.id}-${prefill?.key ?? 0}`}
+            key={`${machine.id}-${activePrefill?.key ?? 0}`}
             machine={machine}
             defs={machineDefs}
-            prefill={prefill?.key ? prefill : null}
-            onDraftChange={setDraft}
+            prefill={activePrefill}
+            onDefaultsSaved={load}
+            onEditSettings={() => openMachineSettings(machine.id)}
           />
         )}
         {tab === 'history' && machine && (
@@ -146,14 +147,5 @@ function Workspace({ user }) {
         )}
       </main>
     </div>
-    <Assistant
-      open={askOpen}
-      onClose={() => setAskOpen(false)}
-      machines={machines}
-      defs={defs}
-      machine={machine}
-      draft={tab === 'log' ? draft : null}
-    />
-    </>
   )
 }

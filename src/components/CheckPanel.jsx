@@ -1,4 +1,4 @@
-import { OUTCOMES, formatValue } from '../constants'
+import { OUTCOMES, formatValue, sameValue } from '../constants'
 
 // The pre-flight check shown beside the form. Its colour tells you,
 // at a glance, whether this experiment is worth running.
@@ -65,7 +65,7 @@ export default function CheckPanel({ check, material, defs, current, filled, all
           <ul className="mt-4 space-y-3">
             {check.matches.map((m) => {
               const o = OUTCOMES[m.outcome]
-              const diffs = defs.filter((d) => current[d.key] !== undefined && String(m.params?.[d.key] ?? '') !== String(current[d.key]))
+              const diffs = defs.filter((d) => current[d.key] !== undefined && !sameValue(d, m.params?.[d.key], current[d.key]))
               return (
                 <li key={m.run_id} className="rounded-md border border-line p-3">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
