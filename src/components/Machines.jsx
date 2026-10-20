@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
-import { blank, slug } from '../constants'
+import { DEFAULT, blank, slug } from '../constants'
 import { deletePhotoFilesFor } from '../lib/photos'
 import SettingField from './SettingField'
 
@@ -216,6 +216,13 @@ function MachineEditor({ machine, defs, runCount, templates, onChanged, onDelete
     onChanged()
   }
 
+  async function allToDefault() {
+    if (!confirm(`Set every default for ${machine.name} to “Default”? New runs will start with everything on Default, and you only fill in what you change.`)) return
+    const { error } = await supabase.from('parameter_defs').update({ default_value: DEFAULT }).eq('machine_id', machine.id)
+    if (error) setError(error.message)
+    else onChanged()
+  }
+
   async function clearDefaults() {
     if (!confirm(`Clear all default values for ${machine.name}? New runs will start blank.`)) return
     const { error } = await supabase.from('parameter_defs').update({ default_value: null }).eq('machine_id', machine.id)
@@ -251,6 +258,10 @@ function MachineEditor({ machine, defs, runCount, templates, onChanged, onDelete
       <section>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-lg font-semibold">Settings for {machine.name}</h2>
+          <div className="flex gap-4">
+          <button className="text-sm text-muted hover:text-accent" onClick={allToDefault} disabled={defs.length === 0}>
+            Set all defaults to “Default”
+          </button>
           <button
             className="text-sm text-muted hover:text-bad disabled:opacity-40"
             onClick={clearDefaults}
@@ -258,9 +269,11 @@ function MachineEditor({ machine, defs, runCount, templates, onChanged, onDelete
           >
             Clear all defaults
           </button>
+          </div>
         </div>
         <p className="mt-1 max-w-prose text-sm text-muted">
-          <strong className="text-ink">Default</strong> values pre-fill every new run, so you only change what you’re testing.{' '}
+          <strong className="text-ink">Default</strong> values pre-fill every new run, so you only change what you’re testing. A default
+          can be a number or simply “Default”, meaning the slicer’s own default for that material.{' '}
           <strong className="text-ink">Tolerance</strong> decides what counts as the same experiment: two runs match when every
           setting is within it (0 means identical). Changes save when you leave each box.
         </p>
@@ -403,7 +416,7 @@ function SettingRow({ def, first, last, onMove, onUpdate, onRemove }) {
       </td>
       <td
         className="p-2"
-        onBlur={def.kind === 'choice' ? undefined : () => commit('default_value', blank(dflt) ? null : String(dflt).trim(), def.default_value ?? null)}
+        onBlur={def.kind === 'choice' ? undefined : (e) => { if (e.currentTarget.contains(e.relatedTarget)) return; commit('default_value', blank(dflt) ? null : String(dflt).trim(), def.default_value ?? null) }}
       >
         <SettingField
           def={def}
@@ -412,7 +425,8 @@ function SettingRow({ def, first, last, onMove, onUpdate, onRemove }) {
           label={false}
           onChange={(v) => {
             setDflt(v)
-            if (def.kind === 'choice') commit('default_value', blank(v) ? null : v, def.default_value ?? null)
+            // dropdowns and the Default button save straight away; typed values save when you leave the box
+            if (def.kind === 'choice' || v === DEFAULT) commit('default_value', blank(v) ? null : v, def.default_value ?? null)
           }}
         />
       </td>

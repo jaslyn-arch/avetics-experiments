@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
-import { OUTCOMES, blank, differsFromDefault, formatValue } from '../constants'
+import { OUTCOMES, blank, differsFromDefault, formatValue, isDefault } from '../constants'
 import { signPhotos } from '../lib/photos'
 import RunDetail from './RunDetail'
 
@@ -49,8 +49,9 @@ export default function History({ machine, defs, userId, onStartFrom }) {
   function summary(run) {
     const items = hasDefaults
       ? defs.filter((d) => differsFromDefault(d, run.params?.[d.key]))
-      : defs.filter((d) => !blank(run.params?.[d.key]))
-    return { items: items.slice(0, MAX_SUMMARY), more: Math.max(0, items.length - MAX_SUMMARY), total: items.length }
+      : defs.filter((d) => !blank(run.params?.[d.key]) && !isDefault(run.params[d.key]))
+    const allDefault = defs.some((d) => isDefault(run.params?.[d.key]))
+    return { items: items.slice(0, MAX_SUMMARY), more: Math.max(0, items.length - MAX_SUMMARY), total: items.length, allDefault }
   }
 
   return (
@@ -87,7 +88,7 @@ export default function History({ machine, defs, userId, onStartFrom }) {
               <tr>
                 <th className="p-3 font-medium">Date</th>
                 <th className="p-3 font-medium">Material</th>
-                <th className="p-3 font-medium">{hasDefaults ? 'Changed from defaults' : 'Settings'}</th>
+                <th className="p-3 font-medium">{hasDefaults ? 'Changed from defaults' : 'Settings (other than Default)'}</th>
                 <th className="p-3 font-medium">Result</th>
                 <th className="p-3 font-medium">Photos</th>
                 <th className="p-3"><span className="sr-only">Actions</span></th>
@@ -107,7 +108,7 @@ export default function History({ machine, defs, userId, onStartFrom }) {
                     </td>
                     <td className="p-3">
                       {s.total === 0 ? (
-                        <span className="text-muted">{hasDefaults ? 'Same as defaults' : 'No settings recorded'}</span>
+                        <span className="text-muted">{hasDefaults ? 'Same as defaults' : s.allDefault ? 'All on Default' : 'No settings recorded'}</span>
                       ) : (
                         <ul className="space-y-0.5">
                           {s.items.map((d) => (

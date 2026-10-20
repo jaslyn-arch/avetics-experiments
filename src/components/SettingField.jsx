@@ -1,29 +1,77 @@
-// One setting's input: a number box, a text box, or a dropdown
+import { useEffect, useRef } from 'react'
+import { DEFAULT, isDefault } from '../constants'
+
+// One setting's input: a number box, a text box, or a dropdown.
+// Any of them can be set to "Default" (the slicer's / machine's own default).
 export default function SettingField({ def, value, onChange, changed = false, compact = false, label = true }) {
   const id = `setting-${def.id}`
-  const cls = `field ${compact ? 'field-sm' : ''} ${def.kind === 'number' ? 'font-mono' : ''} ${changed ? '!border-accent' : ''}`
+  const inputRef = useRef(null)
+  const focusNext = useRef(false)
   const options = def.options || []
   const v = value ?? ''
+  const onDefault = isDefault(v)
 
-  const input =
-    def.kind === 'choice' ? (
-      <select id={id} className={cls} value={v} onChange={(e) => onChange(e.target.value)} aria-label={label ? undefined : def.label}>
+  // After leaving "Default" to type a value, put the cursor straight in the box
+  useEffect(() => {
+    if (focusNext.current && !onDefault) {
+      focusNext.current = false
+      inputRef.current?.focus()
+    }
+  }, [onDefault])
+
+  const base = `field ${compact ? 'field-sm' : ''} ${changed ? '!border-accent' : ''}`
+  const a11yLabel = label ? undefined : def.label
+
+  let input
+  if (def.kind === 'choice') {
+    input = (
+      <select id={id} className={base} value={onDefault ? DEFAULT : v} onChange={(e) => onChange(e.target.value)} aria-label={a11yLabel}>
         <option value="">—</option>
+        <option value={DEFAULT}>Default</option>
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
-        {v !== '' && !options.some((o) => o.toLowerCase() === String(v).toLowerCase()) && <option value={v}>{v}</option>}
+        {v !== '' && !onDefault && !options.some((o) => o.toLowerCase() === String(v).toLowerCase()) && <option value={v}>{v}</option>}
       </select>
-    ) : (
-      <input
-        id={id}
-        className={cls}
-        type={def.kind === 'number' ? 'number' : 'text'}
-        step="any"
-        inputMode={def.kind === 'number' ? 'decimal' : undefined}
-        value={v}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={label ? undefined : def.label}
-      />
     )
+  } else if (onDefault) {
+    input = (
+      <button
+        type="button"
+        id={id}
+        className={`${base} text-left italic text-muted hover:border-accent`}
+        onClick={() => { focusNext.current = true; onChange('') }}
+        aria-label={`${def.label}: Default. Click to enter your own value.`}
+      >
+        Default
+      </button>
+    )
+  } else {
+    input = (
+      <div className="relative">
+        <input
+          ref={inputRef}
+          id={id}
+          className={`${base} ${def.kind === 'number' ? 'font-mono' : ''} ${v !== '' ? 'pr-16' : ''}`}
+          type={def.kind === 'number' ? 'number' : 'text'}
+          step="any"
+          inputMode={def.kind === 'number' ? 'decimal' : undefined}
+          value={v}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label={a11yLabel}
+        />
+        {v !== '' && (
+          <button
+            type="button"
+            onClick={() => onChange(DEFAULT)}
+            title="Set back to Default"
+            aria-label={`Set ${def.label} back to Default`}
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded border border-line px-1.5 py-0.5 text-xs text-muted hover:border-accent hover:text-accent"
+          >
+            Default
+          </button>
+        )}
+      </div>
+    )
+  }
 
   if (!label) return input
 
@@ -34,7 +82,9 @@ export default function SettingField({ def, value, onChange, changed = false, co
       </label>
       {input}
       {changed && def.default_value && (
-        <p className="mt-1 text-xs font-bold text-accent">Changed · default {def.default_value}</p>
+        <p className="mt-1 text-xs font-semibold text-accent">
+          {isDefault(def.default_value) ? 'Changed from Default' : `Changed · default ${def.default_value}`}
+        </p>
       )}
     </div>
   )

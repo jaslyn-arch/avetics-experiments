@@ -7,8 +7,14 @@ export const OUTCOMES = {
 
 export const blank = (v) => v === undefined || v === null || String(v).trim() === ''
 
+// "Default" means "left on the slicer's / machine's own default"
+// (e.g. Bambu Studio's default for that filament)
+export const DEFAULT = 'Default'
+export const isDefault = (v) => !blank(v) && String(v).trim().toLowerCase() === 'default'
+
 export function formatValue(def, value) {
   if (blank(value)) return '—'
+  if (isDefault(value)) return DEFAULT
   return def.unit ? `${value} ${def.unit}` : String(value)
 }
 

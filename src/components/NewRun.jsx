@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
-import { OUTCOMES, blank, differsFromDefault, groupDefs, materialHint } from '../constants'
+import { DEFAULT, OUTCOMES, blank, differsFromDefault, groupDefs, isDefault, materialHint } from '../constants'
 import { uploadRunPhotos } from '../lib/photos'
 import CheckPanel from './CheckPanel'
 import SettingField from './SettingField'
@@ -41,7 +41,8 @@ export default function NewRun({ machine, defs, prefill, onDefaultsSaved, onEdit
     for (const d of defs) {
       const v = params[d.key]
       if (blank(v)) continue
-      out[d.key] = d.kind === 'number' && !Number.isNaN(Number(v)) ? Number(v) : String(v).trim()
+      if (isDefault(v)) out[d.key] = DEFAULT
+      else out[d.key] = d.kind === 'number' && !Number.isNaN(Number(v)) ? Number(v) : String(v).trim()
     }
     return out
   }, [params, defs])
@@ -164,6 +165,14 @@ export default function NewRun({ machine, defs, prefill, onDefaultsSaved, onEdit
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-lg font-semibold">Settings</h2>
             <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="btn-quiet btn-sm"
+                title="Set every setting to Default, e.g. Bambu Studio’s default for this filament"
+                onClick={() => setParams(Object.fromEntries(defs.map((d) => [d.key, DEFAULT])))}
+              >
+                All to Default
+              </button>
               <button type="button" className="btn-quiet btn-sm" disabled={!hasDefaults} onClick={() => setParams({ ...defaults })}>
                 Reset to defaults
               </button>
@@ -178,7 +187,7 @@ export default function NewRun({ machine, defs, prefill, onDefaultsSaved, onEdit
               ? changedCount
                 ? `${changedCount} setting${changedCount === 1 ? '' : 's'} changed from ${machine.name}’s defaults.`
                 : `Using ${machine.name}’s defaults. Change only what you’re testing.`
-              : `No defaults yet. Fill in your usual settings and click “Save as defaults” to pre-fill them next time.`}{' '}
+              : `No defaults yet. Click “All to Default” (or fill in your usual settings), then “Save as defaults” to start every run that way.`}{' '}
             <button type="button" className="text-accent underline-offset-2 hover:underline" onClick={onEditSettings}>
               Edit this machine’s settings list
             </button>
