@@ -143,7 +143,7 @@ export default function NewRun({ machine, defs, prefill, onDefaultsSaved, onEdit
   const showGroupHeadings = !(groups.length === 1 && groups[0][0] === 'Other settings')
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
       <form onSubmit={save} className="space-y-6">
         <label className="block max-w-md">
           <span className="lbl">Material</span>
@@ -193,7 +193,7 @@ export default function NewRun({ machine, defs, prefill, onDefaultsSaved, onEdit
                 {showGroupHeadings && (
                   <legend className="mb-2 text-xs font-bold uppercase tracking-wider text-muted">{name}</legend>
                 )}
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(15.5rem,1fr))] gap-4">
                   {items.map((d) => (
                     <SettingField
                       key={d.id}
