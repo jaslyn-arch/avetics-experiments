@@ -83,13 +83,13 @@ export default function History({ machine, defs, userId, onStartFrom }) {
       {shown.length > 0 && (
         <div className="mt-6 overflow-x-auto rounded-lg border border-line bg-surface">
           <table className="w-full min-w-[52rem] text-left text-sm">
-            <thead className="border-b border-line text-muted">
+            <thead className="border-b border-line text-xs font-medium text-muted">
               <tr>
-                <th className="p-3 font-normal">Date</th>
-                <th className="p-3 font-normal">Material</th>
-                <th className="p-3 font-normal">{hasDefaults ? 'Changed from defaults' : 'Settings'}</th>
-                <th className="p-3 font-normal">Result</th>
-                <th className="p-3 font-normal">Photos</th>
+                <th className="p-3 font-medium">Date</th>
+                <th className="p-3 font-medium">Material</th>
+                <th className="p-3 font-medium">{hasDefaults ? 'Changed from defaults' : 'Settings'}</th>
+                <th className="p-3 font-medium">Result</th>
+                <th className="p-3 font-medium">Photos</th>
                 <th className="p-3"><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
@@ -100,7 +100,7 @@ export default function History({ machine, defs, userId, onStartFrom }) {
                 const photos = r.run_photos
                 return (
                   <tr key={r.id} className="border-b border-line align-top last:border-0">
-                    <td className="whitespace-nowrap p-3">{new Date(r.created_at).toLocaleDateString()}</td>
+                    <td className="whitespace-nowrap p-3 font-mono text-xs text-muted">{new Date(r.created_at).toLocaleDateString()}</td>
                     <td className="p-3">
                       <span className="font-bold">{r.material}</span>
                       {r.notes && <p className="mt-1 line-clamp-2 max-w-[14rem] text-muted">{r.notes}</p>}
@@ -118,7 +118,7 @@ export default function History({ machine, defs, userId, onStartFrom }) {
                       )}
                     </td>
                     <td className="p-3">
-                      <span className={`badge ${o.color}`}>{o.label}</span>
+                      <span className={`tag ${o.color}`}>{o.label}</span>
                       {r.rating && <div className="mt-1 text-muted">Rated {r.rating}/5</div>}
                     </td>
                     <td className="p-3">

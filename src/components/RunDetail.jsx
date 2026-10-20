@@ -98,7 +98,7 @@ export default function RunDetail({ run, defs, urls, userId, onClose, onChanged,
   return (
     <Modal title={title} onClose={onClose} wide>
       <div className="flex flex-wrap items-center gap-2">
-        <span className={`badge ${o.color}`}>{o.label}</span>
+        <span className={`tag ${o.color}`}>{o.label}</span>
         {run.rating && <span className="text-muted">Rated {run.rating}/5</span>}
         {run.is_repeat && <span className="text-muted">Deliberate repeat: {run.repeat_reason}</span>}
         {!mine && <span className="text-muted">Logged by a teammate</span>}
@@ -106,7 +106,7 @@ export default function RunDetail({ run, defs, urls, userId, onClose, onChanged,
 
       {/* Photos */}
       <section className="mt-6">
-        <h3 className="font-bold">Photos</h3>
+        <h3 className="font-semibold">Photos</h3>
         <div className="mt-3">
           <PhotoPicker files={newPhotos} onChange={setNewPhotos} disabled={Boolean(busy)}>
             {photos.map((p, i) => (
@@ -129,7 +129,7 @@ export default function RunDetail({ run, defs, urls, userId, onClose, onChanged,
 
       {/* Result */}
       <section className="mt-6">
-        <h3 className="font-bold">Result</h3>
+        <h3 className="font-semibold">Result</h3>
         {mine ? (
           <div className="mt-3 space-y-3">
             <div className="grid gap-3 sm:grid-cols-2">
@@ -160,13 +160,13 @@ export default function RunDetail({ run, defs, urls, userId, onClose, onChanged,
 
       {/* Settings */}
       <section className="mt-6">
-        <h3 className="font-bold">Settings used</h3>
+        <h3 className="font-semibold">Settings used</h3>
         {groupDefs(defs).map(([name, items]) => {
           const withValues = items.filter((d) => !blank(run.params?.[d.key]))
           if (!withValues.length) return null
           return (
             <div key={name} className="mt-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-muted">{name}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">{name}</p>
               <dl className="mt-1 grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 text-sm sm:grid-cols-[minmax(0,14rem)_auto]">
                 {withValues.map((d) => {
                   const changed = hasDefaults && differsFromDefault(d, run.params[d.key])
@@ -186,7 +186,7 @@ export default function RunDetail({ run, defs, urls, userId, onClose, onChanged,
         })}
         {extra.length > 0 && (
           <div className="mt-3">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted">Settings since removed from this machine</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted">Settings since removed from this machine</p>
             <dl className="mt-1 grid grid-cols-[minmax(0,14rem)_auto] gap-x-4 gap-y-1 text-sm">
               {extra.map(([k, v]) => (
                 <div key={k} className="contents"><dt className="text-muted">{k}</dt><dd>{String(v)}</dd></div>

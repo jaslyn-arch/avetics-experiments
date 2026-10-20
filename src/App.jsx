@@ -74,11 +74,14 @@ function Workspace({ user }) {
   return (
     <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-4">
-        <h1 className="text-xl font-bold">Machine log</h1>
+        <div>
+          <p className="font-mono text-xs text-muted">experiments /</p>
+          <h1 className="text-lg font-semibold leading-tight">Machine log</h1>
+        </div>
         <div className="flex items-center gap-2 text-sm text-muted">
           <span className="mr-1 hidden md:inline">{user.email}</span>
           <ThemeToggle />
-          <button className="btn-quiet btn-sm" onClick={() => supabase.auth.signOut()}>Sign out</button>
+          <button className="text-xs text-muted underline underline-offset-2 hover:text-ink" onClick={() => supabase.auth.signOut()}>Sign out</button>
         </div>
       </header>
 
@@ -98,11 +101,11 @@ function Workspace({ user }) {
                 role="radio"
                 aria-checked={on}
                 onClick={() => setMachineId(m.id)}
-                className={`btn border ${on ? 'border-ink bg-ink text-paper' : 'border-line bg-surface text-ink'}`}
+                className={`btn border ${on ? 'border-accent/40 bg-accent/15 text-accent' : 'border-line bg-surface text-muted hover:bg-paper hover:text-ink'}`}
               >
                 {m.name}
                 {m.machine_type && m.machine_type !== m.name && (
-                  <span className={`text-xs font-normal ${on ? 'opacity-70' : 'text-muted'}`}>{m.machine_type}</span>
+                  <span className={`text-xs font-normal ${on ? 'opacity-75' : ''}`}>{m.machine_type}</span>
                 )}
               </button>
             )
@@ -116,8 +119,8 @@ function Workspace({ user }) {
             key={t.id}
             onClick={() => setTab(t.id)}
             aria-current={tab === t.id ? 'page' : undefined}
-            className={`-mb-px whitespace-nowrap border-b-2 pb-2 font-bold ${
-              tab === t.id ? 'border-accent text-ink' : 'border-transparent text-muted hover:text-ink'
+            className={`-mb-px whitespace-nowrap border-b-2 pb-2 text-sm font-medium ${
+              tab === t.id ? 'border-accent text-accent' : 'border-transparent text-muted hover:text-ink'
             }`}
           >
             {t.label}

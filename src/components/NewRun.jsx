@@ -162,7 +162,7 @@ export default function NewRun({ machine, defs, prefill, onDefaultsSaved, onEdit
 
         <section className="rounded-lg border border-line bg-surface p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-lg font-bold">Settings</h2>
+            <h2 className="text-lg font-semibold">Settings</h2>
             <div className="flex flex-wrap gap-2">
               <button type="button" className="btn-quiet btn-sm" disabled={!hasDefaults} onClick={() => setParams({ ...defaults })}>
                 Reset to defaults
@@ -191,7 +191,7 @@ export default function NewRun({ machine, defs, prefill, onDefaultsSaved, onEdit
             {groups.map(([name, items]) => (
               <fieldset key={name}>
                 {showGroupHeadings && (
-                  <legend className="mb-2 text-xs font-bold uppercase tracking-wider text-muted">{name}</legend>
+                  <legend className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">{name}</legend>
                 )}
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(15.5rem,1fr))] gap-4">
                   {items.map((d) => (

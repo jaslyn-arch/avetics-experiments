@@ -52,7 +52,7 @@ export default function CheckPanel({ check, material, defs, current, filled, all
   return (
     <aside aria-live="polite" className="lg:sticky lg:top-6 lg:self-start">
       <div className={`rounded-lg border border-l-[6px] bg-surface p-5 ${TONE[tone]}`}>
-        <h2 className={`text-lg font-bold ${TITLE_TONE[tone]}`}>{title}</h2>
+        <h2 className={`text-lg font-semibold ${TITLE_TONE[tone]}`}>{title}</h2>
         {body && <p className="mt-1 text-muted">{body}</p>}
 
         {check.state === 'done' && material.trim() && remaining > 0 && (
@@ -69,10 +69,10 @@ export default function CheckPanel({ check, material, defs, current, filled, all
               return (
                 <li key={m.run_id} className="rounded-md border border-line p-3">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className={`rounded border px-2 py-0.5 font-bold ${o.color}`}>{o.label}</span>
+                    <span className={`tag ${o.color}`}>{o.label}</span>
                     {allFilled && m.match_type === 'exact' && <span className="font-bold">Identical</span>}
                     {m.rating && <span className="text-muted">Rated {m.rating}/5</span>}
-                    <span className="ml-auto text-muted">{new Date(m.created_at).toLocaleDateString()}</span>
+                    <span className="ml-auto font-mono text-xs text-muted">{new Date(m.created_at).toLocaleDateString()}</span>
                   </div>
                   {diffs.length > 0 && (
                     <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 text-sm">

@@ -29,7 +29,7 @@ export default function Modal({ title, onClose, children, wide = false }) {
         className={`flex max-h-[92vh] w-full flex-col rounded-t-xl border border-line bg-surface outline-none sm:rounded-xl ${wide ? 'sm:max-w-3xl' : 'sm:max-w-lg'}`}
       >
         <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3">
-          <h2 className="text-lg font-bold">{title}</h2>
+          <h2 className="text-lg font-semibold">{title}</h2>
           <button className="btn-quiet btn-sm" onClick={onClose} aria-label="Close">✕</button>
         </div>
         <div className="overflow-y-auto px-5 py-4">{children}</div>

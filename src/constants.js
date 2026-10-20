@@ -1,8 +1,8 @@
 export const OUTCOMES = {
-  planned: { label: 'Planned', color: 'text-plan border-plan' },
-  success: { label: 'Worked', color: 'text-ok border-ok' },
-  partial: { label: 'Partly worked', color: 'text-warn border-warn' },
-  fail: { label: 'Failed', color: 'text-bad border-bad' },
+  planned: { label: 'Planned', color: 'bg-plan/15 text-plan' },
+  success: { label: 'Worked', color: 'bg-ok/15 text-ok' },
+  partial: { label: 'Partly worked', color: 'bg-warn/15 text-warn' },
+  fail: { label: 'Failed', color: 'bg-bad/15 text-bad' },
 }
 
 export const blank = (v) => v === undefined || v === null || String(v).trim() === ''

@@ -1,7 +1,7 @@
 // One setting's input: a number box, a text box, or a dropdown
 export default function SettingField({ def, value, onChange, changed = false, compact = false, label = true }) {
   const id = `setting-${def.id}`
-  const cls = `field ${compact ? 'field-sm' : ''} ${changed ? '!border-accent' : ''}`
+  const cls = `field ${compact ? 'field-sm' : ''} ${def.kind === 'number' ? 'font-mono' : ''} ${changed ? '!border-accent' : ''}`
   const options = def.options || []
   const v = value ?? ''
 

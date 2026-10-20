@@ -29,7 +29,7 @@ export default function Machines({ machines, defs, selectedId, onSelect, onChang
     <div className="space-y-8">
       <section>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-bold">Machines</h2>
+          <h2 className="text-lg font-semibold">Machines</h2>
           <button className="btn-quiet btn-sm" onClick={() => setAdding((a) => !a)} aria-expanded={adding}>
             {adding ? 'Cancel' : '+ Add a machine'}
           </button>
@@ -50,9 +50,9 @@ export default function Machines({ machines, defs, selectedId, onSelect, onChang
                 <button
                   onClick={() => onSelect(m.id)}
                   aria-current={on ? 'true' : undefined}
-                  className={`min-w-[11rem] rounded-md border px-3 py-2 text-left ${on ? 'border-accent bg-[var(--accent-soft)]' : 'border-line bg-surface hover:border-accent'}`}
+                  className={`min-w-[11rem] rounded-md border px-3 py-2 text-left ${on ? 'border-accent/60 bg-accent/15' : 'border-line bg-surface hover:border-accent'}`}
                 >
-                  <span className="block font-bold">{m.name}</span>
+                  <span className="block font-semibold">{m.name}</span>
                   <span className="block text-sm text-muted">
                     {[m.machine_type, `${counts[m.id] ?? 0} run${counts[m.id] === 1 ? '' : 's'}`].filter(Boolean).join(' · ')}
                   </span>
@@ -250,7 +250,7 @@ function MachineEditor({ machine, defs, runCount, templates, onChanged, onDelete
 
       <section>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-lg font-bold">Settings for {machine.name}</h2>
+          <h2 className="text-lg font-semibold">Settings for {machine.name}</h2>
           <button
             className="text-sm text-muted hover:text-bad disabled:opacity-40"
             onClick={clearDefaults}
@@ -268,15 +268,15 @@ function MachineEditor({ machine, defs, runCount, templates, onChanged, onDelete
 
         <div className="mt-4 overflow-x-auto rounded-lg border border-line bg-surface">
           <table className="w-full min-w-[56rem] text-left text-sm">
-            <thead className="border-b border-line text-muted">
+            <thead className="border-b border-line text-xs font-medium text-muted">
               <tr>
-                <th className="w-20 p-2 font-normal">Order</th>
-                <th className="p-2 font-normal">Setting</th>
-                <th className="w-24 p-2 font-normal">Unit</th>
-                <th className="w-32 p-2 font-normal">Type</th>
-                <th className="p-2 font-normal">Tolerance ± or choices</th>
-                <th className="w-36 p-2 font-normal">Default</th>
-                <th className="w-40 p-2 font-normal">Group</th>
+                <th className="w-20 p-2 font-medium">Order</th>
+                <th className="p-2 font-medium">Setting</th>
+                <th className="w-24 p-2 font-medium">Unit</th>
+                <th className="w-32 p-2 font-medium">Type</th>
+                <th className="p-2 font-medium">Tolerance ± or choices</th>
+                <th className="w-36 p-2 font-medium">Default</th>
+                <th className="w-40 p-2 font-medium">Group</th>
                 <th className="w-10 p-2"><span className="sr-only">Remove</span></th>
               </tr>
             </thead>
@@ -467,7 +467,7 @@ function AddSetting({ machine, defs, onAdded, onError }) {
 
   return (
     <form onSubmit={add} className="rounded-lg border border-line bg-surface p-4">
-      <h3 className="font-bold">Add a setting</h3>
+      <h3 className="font-semibold">Add a setting</h3>
       <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <label className="block xl:col-span-2">
           <span className="lbl">Name</span>
