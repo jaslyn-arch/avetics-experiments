@@ -26,7 +26,7 @@ export default function Login() {
       <ThemeToggle className="fixed right-5 top-5" />
       <form onSubmit={submit} className="w-full max-w-sm rounded-lg border border-line bg-surface p-6">
         <p className="font-mono text-xs text-muted">experiments /</p>
-        <h1 className="text-2xl font-semibold">Machine log</h1>
+        <h1 className="text-2xl font-semibold">Machine Log</h1>
         <p className="mt-1 text-muted">Settings that worked, settings that didn’t, and a check before you test.</p>
 
         <label className="mt-6 block">

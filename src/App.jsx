@@ -76,7 +76,7 @@ function Workspace({ user }) {
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-4">
         <div>
           <p className="font-mono text-xs text-muted">experiments /</p>
-          <h1 className="text-lg font-semibold leading-tight">Machine log</h1>
+          <h1 className="text-lg font-semibold leading-tight">Machine Log</h1>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted">
           <span className="mr-1 hidden md:inline">{user.email}</span>
